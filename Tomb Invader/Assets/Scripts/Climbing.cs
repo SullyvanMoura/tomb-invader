@@ -70,7 +70,7 @@ public class Climbing : MonoBehaviour
     void Update()
     {
         if (!_climbing)
-            if (_input.move != Vector2.zero)
+            if (_input.move.y != 0)
                 if (true)
                     if (CanClimb(out _downRaycastHit, out _forwardRaycastHit, out _endPosition))
                         InitiateClimb();
@@ -317,14 +317,21 @@ public class Climbing : MonoBehaviour
         //Drop Down
         else if (_input.move.y < 0)
         {
-            /*if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit _hittInfo, _dropCheckDistance, _layerMaskClimb))
+            if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit _hittInfo, _dropCheckDistance, _layerMaskClimb))
             {
                 _animator.CrossFade(_dropToAirSetting);
-            }*/
-            Physics.Raycast(transform.position, Vector3.down, out RaycastHit _hittInfo, _dropCheckDistance, _layerMaskClimb);
+            }
+            else
+            {
+                _matchTargetPosition = _hittInfo.point + _forwardNormalXZRotation * _dropOffset;
+                _matchTargetRotation = _forwardNormalXZRotation;
+                _animator.CrossFadeInFixedTime(_dropSetting);
+            }
+
+            /*Physics.Raycast(transform.position, Vector3.down, out RaycastHit _hittInfo, _dropCheckDistance, _layerMaskClimb);
             _matchTargetPosition = _hittInfo.point + _forwardNormalXZRotation * _dropOffset;
             _matchTargetRotation = _forwardNormalXZRotation;
-            _animator.CrossFadeInFixedTime(_dropSetting);
+            _animator.CrossFadeInFixedTime(_dropSetting);*/
 
         }
 
