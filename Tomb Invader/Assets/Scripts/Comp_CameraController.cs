@@ -30,6 +30,8 @@ namespace CG
         [SerializeField] private LayerMask _obstructionLayers = -1;
         private List<Collider> _ignoreColliders = new List<Collider>();
 
+        public Vector3 CameraPlanarDirection { get => _planarDirection; }
+
         //privates
         private Vector3 _planarDirection; //Cameras foward on the x,z plane
         private float _targetDistance;

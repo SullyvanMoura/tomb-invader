@@ -80,7 +80,7 @@ namespace StarterAssets
         private float _cinemachineTargetPitch;
 
         // player
-        private float _speed;
+        public float _speed;
         private float _animationBlend;
         private float _targetRotation = 0.0f;
         private float _rotationVelocity;
@@ -97,6 +97,8 @@ namespace StarterAssets
         private int _animIDJump;
         private int _animIDFreeFall;
         private int _animIDMotionSpeed;
+
+        private bool _hasToStop;
 
 #if ENABLE_INPUT_SYSTEM && STARTER_ASSETS_PACKAGES_CHECKED
         private PlayerInput _playerInput;
@@ -134,8 +136,9 @@ namespace StarterAssets
 
         private void Start()
         {
+            _hasToStop = false;
             _cinemachineTargetYaw = CinemachineCameraTarget.transform.rotation.eulerAngles.y;
-            
+
             _hasAnimator = TryGetComponent(out _animator);
             _controller = GetComponent<CharacterController>();
             _input = GetComponent<StarterAssetsInputs>();
@@ -156,9 +159,13 @@ namespace StarterAssets
         {
             _hasAnimator = TryGetComponent(out _animator);
 
-            JumpAndGravity();
+            if (!_hasToStop)
+            {
+                Move();
+                JumpAndGravity();
+            }
             GroundedCheck();
-            Move();
+
         }
 
         private void LateUpdate()
@@ -388,5 +395,15 @@ namespace StarterAssets
                 AudioSource.PlayClipAtPoint(LandingAudioClip, transform.TransformPoint(_controller.center), FootstepAudioVolume);
             }
         }
+
+        public void Stop()
+        {
+            _hasToStop = true;
+        }
+        public void Continue()
+        {
+            _hasToStop = false;
+        }
+
     }
 }
