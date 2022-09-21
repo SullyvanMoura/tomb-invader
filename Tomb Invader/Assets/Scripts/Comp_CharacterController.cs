@@ -4,13 +4,14 @@ using UnityEngine;
 
 namespace CG
 {
-
+    [RequireComponent(typeof(Rigidbody))]
     public class Comp_CharacterController : MonoBehaviour
     {
-        
+
         [Header("Movement")]
         [SerializeField] private float _runSpeed = 6f;
         [SerializeField] private float _sprintSpeed = 8f;
+        [SerializeField] private Rigidbody rig;
 
         [Header("Sharpness")]
         [SerializeField] private float _rotationSharpness = 10f;
@@ -22,7 +23,7 @@ namespace CG
 
         private float _targetSpeed;
         private Quaternion _targetRotation;
-        
+
         private float _newSpeed;
         private Vector3 _newVelocity;
         private Quaternion _newRotation;
@@ -30,6 +31,7 @@ namespace CG
         private void Start()
         {
 
+            rig = GetComponent<Rigidbody>();
             _animator = GetComponent<Animator>();
             _inputs = GetComponent<Comp_PlayerInputs>();
             _cameraController = GetComponent<Comp_CameraController>();
@@ -49,18 +51,21 @@ namespace CG
             Debug.DrawLine(transform.position, transform.position + _moveInputVector, Color.red);
 
             //Move Speed
-            if (_inputs.Sprint.Pressed()) { _targetSpeed = _moveInputVector != Vector3.zero ? _sprintSpeed : 0;}
-            else  { _targetSpeed = _moveInputVector != Vector3.zero ? _runSpeed : 0;}
+            if (_inputs.Sprint.Pressed()) { _targetSpeed = _moveInputVector != Vector3.zero ? _sprintSpeed : 0; }
+            else { _targetSpeed = _moveInputVector != Vector3.zero ? _runSpeed : 0; }
 
             _newSpeed = Mathf.Lerp(_newSpeed, _targetSpeed, Time.deltaTime * _moveSharpness);
 
             _newVelocity = _moveInputVector * _newSpeed;
-            transform.Translate(_newVelocity * Time.deltaTime, Space.World);
+            //transform.Translate(_newVelocity * Time.deltaTime, Space.World);
 
-            if (_targetSpeed != 0) {
+            rig.velocity = new Vector3(_newVelocity.normalized.x * _targetSpeed, rig.velocity.y, _newVelocity.normalized.z * _targetSpeed);
+
+            if (_targetSpeed != 0)
+            {
 
                 _targetRotation = Quaternion.LookRotation(_moveInputVector);
-                _newRotation = Quaternion.Slerp(transform.rotation , _targetRotation, Time.deltaTime * _rotationSharpness);
+                _newRotation = Quaternion.Slerp(transform.rotation, _targetRotation, Time.deltaTime * _rotationSharpness);
                 transform.rotation = _newRotation;
 
             }
